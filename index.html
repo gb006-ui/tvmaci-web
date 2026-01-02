@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>TV Maci – Retro Játék</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+
+  <style>
+/* ===== ALAP ===== */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Patrick Hand', cursive;
+  background: linear-gradient(to bottom, #8fae9d 0%, #6f9e8d 100%);
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url('noise.jpg');
+  opacity: 0.05;
+  animation: noiseMove 0.3s infinite;
+  z-index: 0;
+}
+
+@keyframes noiseMove {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-2px,1px); }
+  100% { transform: translate(0,0); }
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 300%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at center,
+      rgba(255,255,255,0.18) 0%,
+      rgba(0,0,0,0.25) 70%),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 2px,
+      rgba(0,0,0,0.05) 4px
+    );
+  animation: scanlines 6s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(33%); }
+}
+
+/* ===== NAVBAR ===== */
+
+.navbar {
+  background: linear-gradient(90deg, #8b5a2b, #e6b85c, #8b5a2b);
+  background-size: 300% 100%;
+  animation: headerMove 6s linear infinite;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: center;
+  gap: clamp(10px, 5vw, 40px);
+  border-bottom: 4px solid #e6b85c;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  flex-wrap: wrap;
+}
+
+@keyframes headerMove {
+  0% { background-position: 0% 0; }
+  100% { background-position: 300% 0; }
+}
+
+.navbar a {
+  font-size: clamp(18px, 3vw, 26px);
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+  background-color: #ffcc66;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.navbar a:hover {
+  transform: translateY(-3px);
+  color: #000;
+}
+
+/* ===== OLDAL FÜLEK ===== */
+
+.page {
+  position: relative;
+  min-height: calc(100vh - 60px);
+  padding: 20px;
+  text-align: center;
+  z-index: 1;
+}
+
+h1 {
+  color: #2f4f4f;
+  font-size: clamp(32px, 6vw, 56px);
+  margin: 10px 0 20px 0;
+  text-shadow: 0 2px 0 rgba(255,255,255,0.6);
+}
+
+h2 {
+  color: #2f4f4f;
+  font-size: clamp(22px, 4vw, 32px);
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+
+p {
+  color: #333;
+  font-size: clamp(16px, 2.5vw, 22px);
+  line-height: 1.6;
+  max-width: 900px;
+  margin: 0 auto 15px auto;
+}
+
+/* ===== FŐOLDAL ===== */
+
+#logo-anim {
+  display: inline-block;
+  animation: softPulse 3s ease-in-out infinite;
+}
+
+#logo-anim img {
+  width: clamp(140px, 28vw, 220px);
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+@keyframes softPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.tv-frame {
+  width: clamp(200px, 55vw, 300px);
+  aspect-ratio: 331 / 291;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  border-radius: 12px;
+  box-shadow: 0 0 18px rgba(0,0,0,0.4);
+}
+
+.tv-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.tv-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.05) 0px,
+    rgba(255,255,255,0.05) 1px,
+    rgba(0,0,0,0) 2px
+  );
+  mix-blend-mode: overlay;
+  border-radius: 8px;
+}
+
+/* ===== TÖRTÉNET KÉPE ===== */
+
+.image-box2 img {
+  width: clamp(200px, 60vw, 500px);
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+/* ===== KÉSZÍTÉS KÉPEK ===== */
+
+.image-box3 {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.image-box3 img {
+  width: clamp(200px, 40vw, 350px);
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+/* ===== JÁTÉKOK MENÜ ===== */
+
+#gameList {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.game-icon {
+  width: 180px;
+  background: #ffcc66;
+  padding: 15px;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.game-icon:hover {
+  transform: translateY(-5px);
+}
+
+.game-icon img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+/* ===== JÁTÉK KERET ===== */
+
+.game-screen {
+  display: none;
+  padding: 20px;
+  text-align: center;
+}
+
+.led-btn {
+  background: #ffcc66;
+  border: 3px solid #e6b85c;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 20px;
+  margin: 10px;
+}
+
+.back-btn {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+
+/* ===== UGRÁLÓS ===== */
+
+#hudBox {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 10px;
+}
+
+.palya-rules-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.palyaBtn {
+  background: #ffe08a;
+  border: 3px solid #e6b85c;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ===== PUZZLE ===== */
+
+.puzzle-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.puzzle-thumb {
+  width: 150px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+#difficultySelect button {
+  margin: 10px;
+}
+
+#puzzleCanvas {
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+/* ===== MEMÓRIA ===== */
+
+.memory-ui {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 15px;
+}
+
+.memory-game {
+  display: grid;
+  grid-template-columns: repeat(6, 100px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.memory-card {
+  width: 100px;
+  height: 100px;
+  background: #ffcc66;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+  position: relative;
+  perspective: 800px;
+}
+
+.memory-card-inner {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transition: transform 0.4s;
+  transform-style: preserve-3d;
+}
+
+.memory-card.flipped .memory-card-inner {
+  transform: rotateY(180deg);
+}
+
+.memory-card-front,
+.memory-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+}
+
+.memory-card-front img {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.memory-card-back {
+  background: #e6b85c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transform: rotateY(180deg);
+}
+
+/* ===== PONG ===== */
+
+#pongDifficulty button {
+  margin: 10px;
+}
+
+#pongCanvas {
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+#pongMobileControls {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.pongSide button {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #ffcc66;
+  border: 3px solid #e6b85c;
+  margin: 10px;
+}
+
+/* ===== MOBIL UGRÁLÓS GOMB – 90×90 ===== */
+
+#mobileJump {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  #mobileJump {
+    display: block !important;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+  }
+
+  #mobileJump button {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #ffcc66;
+    border: 4px solid #e6b85c;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: 0.15s;
+  }
+
+  #mobileJump button:active {
+    transform: scale(0.9);
+    background: #ffe08a;
+  }
+}
+
+/* ===== VISSZA A TETEJÉRE ===== */
+
+#backToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: #ffcc66;
+  border: 3px solid #e6b85c;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
+  cursor: pointer;
+  font-size: 26px;
+  display: none;
+  z-index: 9999;
+}
+
+#backToTop.show {
+  display: block;
+}
+
+  </style>
+</head>
+<body>
+  <!-- TV MACI BETÖLTÉS OVERLAY -->
+  <div id="transitionOverlay" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#000;
+    color:white;
+    z-index:99999;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    font-size:28px;
+  ">
+    <img src="log.png" alt="TV Maci logó" class="loading-logo" style="width:120px; margin-bottom:20px;">
+    <p class="loading-text">Betöltés…</p>
+  </div>
+
+  <!-- CRT villanás -->
+  <div id="crtFlash" style="
+    position:fixed;
+    inset:0;
+    background:white;
+    opacity:0;
+    pointer-events:none;
+    z-index:99998;
+  "></div>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <a href="#" onclick="showTab('fo')">Főoldal</a>
+    <a href="#" onclick="showTab('tortenet')">Történet</a>
+    <a href="#" onclick="showTab('jatek')">Játékok</a>
+    <a href="#" onclick="showTab('keszites')">Készítés</a>
+  </div>
+
+  <!-- FŐOLDAL -->
+  <div id="fo" class="page" style="display:block;">
+    <h1>Üdvözlünk a TV Maci Retro Játék Weboldalán!</h1>
+
+    <div id="logo-anim">
+      <img src="log.png" alt="TV Maci logó">
+    </div>
+
+    <p>A gyerekkor legendája újra él — most már te irányítod a TV Macit.</p>
+
+    <div class="tv-frame">
+      <video src="intro.mp4" autoplay muted playsinline loop></video>
+    </div>
+  </div>
+  <!-- TÖRTÉNET -->
+  <div id="tortenet" class="page" style="display:none;">
+    <h1>TV Maci – Történet és hangulat</h1>
+
+    <p>
+      A TV Maci a magyar televízió egyik legismertebb figurája, aki generációk számára jelentette
+      az esti mesét és a nap lezárását.
+    </p>
+
+    <p>
+      A jellegzetes zene, a lassú, nyugodt mozgások és a kedves, egyszerű jelenetek sokakban máig nosztalgiát ébresztenek.
+    </p>
+
+    <div class="image-box2">
+      <img src="tortenet.jpg" alt="Történet kép">
+    </div>
+  </div>
+
+  <!-- KÉSZÍTÉS -->
+  <div id="keszites" class="page" style="display:none;">
+    <h1>Hogyan készült?</h1>
+
+    <p>
+      A projekt célja az volt, hogy a TV Maci ikonikus világát modern, interaktív formában
+      újraalkossuk — úgy, hogy közben megőrizzük a retro hangulatot és a gyerekkor varázsát.
+    </p>
+
+    <h2>1. Tervezés és vizuális világ</h2>
+    <p>
+      Először a vizuális stílus készült el: saját rajzok, háttérképek, karakterek és animációk.
+      A cél az volt, hogy minden elem kézzel rajzoltnak hasson, mint a régi TV Maci műsorok.
+    </p>
+
+    <div class="image-box3">
+      <img src="keszites1.jpg" alt="Készítés 1">
+      <img src="keszites2.jpg" alt="Készítés 2">
+    </div>
+
+    <h2>2. Sprite-ok és animáció</h2>
+    <p>
+      A TV Maci mozgását több külön PNG-képből raktuk össze. A futás, ugrás és állás külön sprite-okból áll.
+    </p>
+
+    <h2>3. Játékmotor és JavaScript</h2>
+    <p>
+      A játékok logikája teljes egészében nyers JavaScriptben fut — külső könyvtárak nélkül.
+      Ez biztosítja a gyors működést és a teljes kontrollt a játékmechanikák felett.
+    </p>
+
+    <h2>4. Webes felület és menük</h2>
+    <p>
+      A teljes oldal több fülre lett bontva: főoldal, történet, játékok, készítés.
+      A menü animált, retro TV-s stílusú, és mobilon is tökéletesen működik.
+    </p>
+  </div>
+  <!-- JÁTÉKOK FÜL -->
+  <div id="jatek" class="page" style="display:none;">
+    <h1>Válassz játékot!</h1>
+
+    <div id="gameList">
+      <div class="game-icon" onclick="openGame()">
+        <img src="log.png" alt="Ugrálós játék">
+        <h3>Ugrálj TV Macival</h3>
+      </div>
+
+      <div class="game-icon" onclick="openPuzzle()">
+        <img src="puzlogo.png" alt="Puzzle">
+        <h3>TV Maci kirakó</h3>
+      </div>
+
+      <div class="game-icon" onclick="openMemory()">
+        <img src="memorialogo.png" alt="Memória">
+        <h3>TV Maci memóriajáték</h3>
+      </div>
+
+      <div class="game-icon" onclick="openPong()">
+        <img src="ponglogo.png" alt="Pong">
+        <h3>TV Maci vs Paprikajancsi</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================
+       UGRÁLÓS JÁTÉK KONTAINER
+  ============================ -->
+  <div id="gameContainer" class="game-screen" style="display:none; position:relative;">
+    <button class="led-btn back-btn" onclick="closeGame()">⬅ Vissza</button>
+
+    <h1>TV Maci – Ugrálós Játék</h1>
+
+    <!-- HUD -->
+    <div id="hudBox">
+      <div id="jumpText">Pontszám: 0</div>
+      <div id="highJumpText">Rekord ugrás: 0</div>
+      <button id="restartButton">🔁 Újrakezdés</button>
+    </div>
+
+    <!-- Pályaválasztó + Szabályok -->
+    <div class="palya-rules-row">
+      <div id="palyaValaszto">
+        <button data-stage="0" class="palyaBtn">🌞 Nappali</button>
+        <button data-stage="1" class="palyaBtn">❄️ Téli</button>
+        <button data-stage="2" class="palyaBtn">🌲 Sötét erdő</button>
+      </div>
+
+      <button id="rules-btn">📘 Játékszabályok</button>
+    </div>
+
+    <!-- Játék canvas -->
+    <canvas id="platformerCanvas" width="800" height="300"></canvas>
+
+    <!-- MOBIL UGRÁSGOMB -->
+    <div id="mobileJump">
+      <button id="btnJump"></button>
+    </div>
+  </div>
+  <!-- ============================
+       PUZZLE JÁTÉK KONTAINER
+  ============================ -->
+  <div id="puzzleContainer" class="game-screen" style="display:none; position:relative;">
+    <button class="led-btn back-btn" onclick="closePuzzle()">⬅ Vissza</button>
+
+    <h1>TV Maci kirakó</h1>
+
+    <h2>Válassz puzzle képet:</h2>
+
+    <div class="puzzle-grid">
+      <div onclick="selectPuzzleImage('puzzlee1.png')">
+        <img src="puzzlee1.png" class="puzzle-thumb" alt="Puzzle 1">
+        <p>Puzzle 1</p>
+      </div>
+
+      <div onclick="selectPuzzleImage('puzzlee2.png')">
+        <img src="puzzlee2.png" class="puzzle-thumb" alt="Puzzle 2">
+        <p>Puzzle 2</p>
+      </div>
+
+      <div onclick="selectPuzzleImage('puzzlee3.png')">
+        <img src="puzzlee3.png" class="puzzle-thumb" alt="Puzzle 3">
+        <p>Puzzle 3</p>
+      </div>
+    </div>
+
+    <div id="difficultySelect" style="display:none;">
+      <button class="led-btn" onclick="startPuzzle(3)">Könnyű (3×3)</button>
+      <button class="led-btn" onclick="startPuzzle(4)">Közepes (4×4)</button>
+      <button class="led-btn" onclick="startPuzzle(5)">Nehéz (5×5)</button>
+    </div>
+
+    <p id="puzzleInfo">Válassz egy képet a kezdéshez!</p>
+
+    <button id="reshuffleBtn" class="led-btn" onclick="reshufflePuzzle()" style="display:none;">
+      🔁 Újra keverés
+    </button>
+
+    <canvas id="puzzleCanvas" width="600" height="400" style="
+      margin-top:20px;
+      background:#222;
+      border-radius:12px;
+      box-shadow:0 0 12px rgba(0,0,0,0.3);
+    "></canvas>
+  </div>
+  <!-- ============================
+       MEMÓRIA JÁTÉK KONTAINER
+  ============================ -->
+  <div id="memoryContainer" class="game-screen" style="display:none; position:relative;">
+    <button class="led-btn back-btn" onclick="closeMemory()">⬅ Vissza</button>
+
+    <h1>TV Maci memóriajáték</h1>
+
+    <!-- IDŐMÉRŐ -->
+    <div id="timerBox" style="font-size:22px; margin-bottom:10px;">
+      Idő: <span id="timer">0</span> mp
+    </div>
+
+    <p>Fordítási limit: <strong>40</strong> alkalom</p>
+
+    <!-- STATISZTIKA + ÚJ JÁTÉK -->
+    <div class="memory-ui">
+      <div class="stats">
+        <span>Fordítások: <span id="moves">0</span> / 40</span><br>
+        <span>Talált párok: <span id="matches">0</span> / 15</span>
+      </div>
+      <button id="restart" class="led-btn">Új játék</button>
+    </div>
+
+    <!-- KÁRTYÁK HELYE -->
+    <div id="memory-game" class="memory-game"></div>
+  </div>
+  <!-- ============================
+       PONG – TV MACI VS PAPRIKAJANCSI
+  ============================ -->
+  <div id="pongContainer" class="game-screen" style="display:none; position:relative;">
+    <button class="led-btn back-btn" onclick="closePong()">⬅ Vissza</button>
+
+    <h2>TV Maci vs Paprikajancsi – Kétjátékos (30 pontig)</h2>
+
+    <!-- Nehézség választó -->
+    <div id="pongDifficulty">
+      <button class="led-btn" onclick="setPongDifficulty('slow')">Lassú</button>
+      <button class="led-btn" onclick="setPongDifficulty('normal')">Normál</button>
+      <button class="led-btn" onclick="setPongDifficulty('fast')">Gyors</button>
+    </div>
+
+    <!-- PONG CANVAS -->
+    <canvas id="pongCanvas" width="600" height="400" style="
+      margin-top:20px;
+      background:black;
+      border-radius:12px;
+      box-shadow:0 0 12px rgba(0,0,0,0.3);
+    "></canvas>
+
+    <p style="font-size:20px; margin-top:10px;">
+      <b>Paprikajancsi:</b> W / S &nbsp;&nbsp;&nbsp;
+      <b>TV Maci:</b> ↑ / ↓
+    </p>
+
+    <!-- MOBIL IRÁNYÍTÓK -->
+    <div id="pongMobileControls">
+      <div class="pongSide">
+        <button id="p1Up"></button>
+        <button id="p1Down"></button>
+      </div>
+
+      <div class="pongSide">
+        <button id="p2Up"></button>
+        <button id="p2Down"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================
+       PONG GYŐZTES POPUP
+  ============================ -->
+  <div id="pongWinnerOverlay" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.7);
+    z-index:99999;
+    align-items:center;
+    justify-content:center;
+  ">
+    <div id="pongWinnerBox" style="
+      background:white;
+      padding:30px;
+      border-radius:20px;
+      text-align:center;
+      width:300px;
+      box-shadow:0 0 20px rgba(0,0,0,0.5);
+    ">
+      <h2 id="pongWinnerTitle">Győztes!</h2>
+      <p id="pongWinnerText"></p>
+      <button id="pongWinnerRestart" class="led-btn">Új meccs</button>
+    </div>
+  </div>
+  <!-- VISSZA A TETEJÉRE GOMB -->
+  <button id="backToTop" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆</button>
+
+  <script>
+    // Oldalváltó függvény
+    function showTab(tabId) {
+      document.getElementById("fo").style.display = "none";
+      document.getElementById("tortenet").style.display = "none";
+      document.getElementById("jatek").style.display = "none";
+      document.getElementById("keszites").style.display = "none";
+
+      document.getElementById(tabId).style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Vissza a tetejére gomb megjelenítése
+    window.addEventListener("scroll", () => {
+      const btn = document.getElementById("backToTop");
+      if (window.scrollY > 300) btn.classList.add("show");
+      else btn.classList.remove("show");
+    });
+  </script>
+
+  <!-- A TELJES JÁTÉKLOGIKA -->
+  <script src="tvmaci.js"></script>
+
+</body>
+</html>
