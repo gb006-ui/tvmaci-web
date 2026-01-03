@@ -171,8 +171,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const maciJump = new Image();
     maciJump.src = "maci_ugrik.png";
 
-    const MACI_WIDTH = 66;
-    const MACI_HEIGHT = 66;
+// Maci mérete a canvas szélességéhez igazítva
+const MACI_WIDTH = canvas.width * 0.12;   // 12% szélesség
+const MACI_HEIGHT = MACI_WIDTH;
+
 
     let jumps = 0;
     let highJumps = Number(localStorage.getItem("highJumps")) || 0;
@@ -1242,3 +1244,4 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+
