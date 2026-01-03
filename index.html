@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>TV Maci – Retro Játék</title>
+  <!-- FONTOS: iPhone ne zoomoljon, ne kicsinyítsen automatikusan -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
   <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 
   <style>
@@ -276,7 +276,7 @@
       100% { opacity: 0; }
     }
 
-    /* ===== HUD ===== */
+    /* ===== UGRÁLÓS HUD ===== */
 
     #hudBox {
       display: none;
@@ -409,7 +409,7 @@
       z-index: 2;
     }
 
-    /* ===== CANVAS – FIX MÉRET HTML-BŐL, CSS CSAK KERET ===== */
+    /* ===== CANVAS – stílus, a MÉRETET JS állítja ===== */
 
     canvas {
       display: block;
@@ -694,7 +694,6 @@
         justify-content: space-between;
       }
 
-      /* Memória – kisebb kártyák mobilon */
       .memory-game {
         grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
         gap: 8px;
@@ -799,8 +798,7 @@
       <button id="rules-btn">📘 Játékszabályok</button>
     </div>
 
-    <!-- FIX MÉRET, MINT A RÉGI JÓ VERZIÓBAN -->
-    <canvas id="platformerCanvas" width="800" height="300"></canvas>
+    <canvas id="platformerCanvas"></canvas>
 
     <div id="mobileJump">
       <button id="btnJump"></button>
@@ -840,8 +838,7 @@
 
     <p id="puzzleInfo">Válassz egy képet a kezdéshez!</p>
 
-    <!-- FIX, MINT RÉGEN -->
-    <canvas id="puzzleCanvas" width="600" height="400"></canvas>
+    <canvas id="puzzleCanvas"></canvas>
   </div>
 
   <!-- MEMÓRIA -->
@@ -869,8 +866,7 @@
 
     <h2>TV Maci vs Paprikajancsi – Kétjátékos (30 pontig)</h2>
 
-    <!-- FIX, MINT RÉGEN -->
-    <canvas id="pongCanvas" width="600" height="400"></canvas>
+    <canvas id="pongCanvas"></canvas>
 
     <p>
       <b>Paprikajancsi:</b> W / S &nbsp;&nbsp;&nbsp;
@@ -927,4 +923,3 @@
   <script src="tvmaci.js"></script>
 </body>
 </html>
-
