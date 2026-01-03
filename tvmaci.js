@@ -26,15 +26,23 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ============================
-       UGRÁLÓS
+       ALAP HORGONYOK
     ============================ */
 
     const jatekTab = document.getElementById("jatek");
     const gameContainer = document.getElementById("gameContainer");
     const canvas = document.getElementById("platformerCanvas");
+    const puzzleCanvas = document.getElementById("puzzleCanvas");
+    const pongCanvas = document.getElementById("pongCanvas");
     if (!jatekTab || !canvas || !gameContainer) return;
 
     const ctx = canvas.getContext("2d");
+    const puzzleCtx = puzzleCanvas ? puzzleCanvas.getContext("2d") : null;
+    const pongCtx = pongCanvas ? pongCanvas.getContext("2d") : null;
+
+    /* ============================
+       OLDALAK ELREJTÉSE / NAV
+    ============================ */
 
     function hideAllPages() {
         document.getElementById("fo").style.display = "none";
@@ -56,6 +64,57 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         window.scrollTo({ top: 0, behavior: "instant" });
     };
+
+    /* ============================
+       CANVAS MÉRETEZÉS – MOBILON KISEBB
+       (NINCS TÖBB FÉL KÉPERNYŐ IPHONE-ON)
+    ============================ */
+
+    function resizeAllCanvas() {
+        const w = window.innerWidth;
+
+        // Ugrálós – cél: PC-n 800x300, mobilon beleférjen a képernyőbe
+        if (canvas) {
+            if (w <= 600) {
+                canvas.width = Math.max(320, w - 40); // kis ráhagyás a keretnek
+                canvas.height = 220;                  // alacsonyabb, hogy biztosan beleférjen
+            } else {
+                canvas.width = 800;
+                canvas.height = 300;
+            }
+        }
+
+        // Puzzle – arány 600x400 -> 3:2
+        if (puzzleCanvas) {
+            if (w <= 600) {
+                const pw = Math.max(320, w - 40);
+                puzzleCanvas.width = pw;
+                puzzleCanvas.height = Math.round(pw * (2 / 3));
+            } else {
+                puzzleCanvas.width = 600;
+                puzzleCanvas.height = 400;
+            }
+        }
+
+        // Pong – ugyanaz az arány
+        if (pongCanvas) {
+            if (w <= 600) {
+                const pw = Math.max(320, w - 40);
+                pongCanvas.width = pw;
+                pongCanvas.height = Math.round(pw * (2 / 3));
+            } else {
+                pongCanvas.width = 600;
+                pongCanvas.height = 400;
+            }
+        }
+    }
+
+    resizeAllCanvas();
+    window.addEventListener("resize", resizeAllCanvas);
+
+    /* ============================
+       UGRÁLÓS – LOGIKA
+    ============================ */
 
     const palyaGombok = document.querySelectorAll(".palyaBtn");
     let stage = 0; // 0 nappal, 1 tél, 2 sötét erdő
@@ -142,12 +201,22 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    function groundY() {
+        // az eredeti 240 pixel a 300 magas vásznon -> arányszám
+        return canvas.height * (240 / 300);
+    }
+
+    function groundStripY() {
+        // eredeti 280 pixel
+        return canvas.height * (280 / 300);
+    }
+
     function resetGame() {
         jumps = 0;
 
         player = {
             x: 80,
-            y: 240,
+            y: groundY(),
             width: MACI_WIDTH,
             height: MACI_HEIGHT,
             dy: 0,
@@ -186,7 +255,7 @@ window.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < 4; i++) {
             hills.push({
                 x: i * 250,
-                y: 220,
+                y: canvas.height * (220 / 300),
                 width: 250,
                 height: 80,
                 speed: 0.8
@@ -196,7 +265,7 @@ window.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < 4; i++) {
             trees.push({
                 x: i * 200 + 100,
-                y: 200,
+                y: canvas.height * (200 / 300),
                 width: 40,
                 height: 80,
                 speed: 1.2
@@ -266,7 +335,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         if (stage === 2) {
             ctx.fillStyle = "#111";
-            ctx.fillRect(0, 280, canvas.width, 20);
+            ctx.fillRect(0, groundStripY(), canvas.width, canvas.height - groundStripY());
             return;
         }
 
@@ -308,7 +377,7 @@ window.addEventListener("DOMContentLoaded", () => {
         } else {
             ctx.fillStyle = "#c2b280";
         }
-        ctx.fillRect(0, 280, canvas.width, 20);
+        ctx.fillRect(0, groundStripY(), canvas.width, canvas.height - groundStripY());
     }
 
     function updateBackground() {
@@ -349,12 +418,12 @@ window.addEventListener("DOMContentLoaded", () => {
         const allSizes = [...normalSizes, ...specialSizes];
         const pick = allSizes[Math.floor(Math.random() * allSizes.length)];
 
-        const groundY = 260;
+        const gY = groundY();
         const baseHeight = 40;
 
         obstacles.push({
             x: canvas.width,
-            y: groundY - (pick.h - baseHeight),
+            y: gY - (pick.h - baseHeight),
             width: pick.w,
             height: pick.h
         });
@@ -406,12 +475,14 @@ window.addEventListener("DOMContentLoaded", () => {
         player.dy += player.gravity;
         player.y += player.dy;
 
-        if (player.y >= 240) {
+        const gY = groundY();
+
+        if (player.y >= gY) {
             if (!player.onGround) {
                 for (let i = 0; i < 8; i++) {
                     dust.push({
                         x: player.x + MACI_WIDTH / 2,
-                        y: 240 + MACI_HEIGHT - 10,
+                        y: gY + MACI_HEIGHT - 10,
                         dx: (Math.random() - 0.5) * 3,
                         dy: -Math.random() * 2,
                         size: 4 + Math.random() * 3,
@@ -419,7 +490,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     });
                 }
             }
-            player.y = 240;
+            player.y = gY;
             player.dy = 0;
             player.onGround = true;
         } else {
@@ -498,6 +569,7 @@ window.addEventListener("DOMContentLoaded", () => {
         showTransition(() => {
             hideAllPages();
             gameContainer.style.display = "block";
+            resizeAllCanvas(); // ha más fülről jövünk, frissítsen
             startGame();
             window.scrollTo({ top: 0, behavior: "instant" });
         });
@@ -518,8 +590,6 @@ window.addEventListener("DOMContentLoaded", () => {
        PUZZLE
     ============================ */
 
-    const puzzleCanvas = document.getElementById("puzzleCanvas");
-    const puzzleCtx = puzzleCanvas ? puzzleCanvas.getContext("2d") : null;
     const puzzleInfo = document.getElementById("puzzleInfo");
     const difficultySelect = document.getElementById("difficultySelect");
 
@@ -626,7 +696,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const rect = puzzleCanvas.getBoundingClientRect();
 
-        // skálázás: látható méret -> canvas koordináta (biztonság kedvéért)
+        // SKÁLÁZÁS – vizuális -> canvas koordináta (minden eszközre)
         const scaleX = puzzleCanvas.width / rect.width;
         const scaleY = puzzleCanvas.height / rect.height;
 
@@ -679,6 +749,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
             if (puzzleContainer) puzzleContainer.style.display = "block";
 
+            resizeAllCanvas();
             if (puzzleInfo) puzzleInfo.textContent = "Válassz egy képet a kezdéshez!";
             if (difficultySelect) difficultySelect.style.display = "none";
             puzzleRunning = false;
@@ -884,9 +955,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     let pongRunning = false;
 
-    const pongCanvas = document.getElementById("pongCanvas");
-    const pongCtx = pongCanvas ? pongCanvas.getContext("2d") : null;
-
     const pongWinnerOverlay = document.getElementById("pongWinnerOverlay");
     const pongWinnerTitle = document.getElementById("pongWinnerTitle");
     const pongWinnerText = document.getElementById("pongWinnerText");
@@ -906,8 +974,8 @@ window.addEventListener("DOMContentLoaded", () => {
         const pHeight = 90;
         const pWidth = 20;
 
-        let p1 = { x: 40, y: 155, w: pWidth, h: pHeight, dy: 0, score: 0 };
-        let p2 = { x: pongCanvas.width - 40 - pWidth, y: 155, w: pWidth, h: pHeight, dy: 0, score: 0 };
+        let p1 = { x: 40, y: pongCanvas.height / 2 - pHeight / 2, w: pWidth, h: pHeight, dy: 0, score: 0 };
+        let p2 = { x: pongCanvas.width - 40 - pWidth, y: pongCanvas.height / 2 - pHeight / 2, w: pWidth, h: pHeight, dy: 0, score: 0 };
 
         let ball = { x: pongCanvas.width / 2, y: pongCanvas.height / 2, r: 10, dx: 3, dy: 2 };
 
@@ -1128,6 +1196,7 @@ window.addEventListener("DOMContentLoaded", () => {
         showTransition(() => {
             hideAllPages();
             document.getElementById("pongContainer").style.display = "block";
+            resizeAllCanvas();
             if (pongWinnerOverlay) pongWinnerOverlay.style.display = "none";
             startPong();
             window.scrollTo({ top: 0, behavior: "instant" });
@@ -1171,4 +1240,5 @@ window.addEventListener("DOMContentLoaded", () => {
             simulateKey("Space", "keyup");
         }, { passive: false });
     }
+
 });
